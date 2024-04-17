@@ -1,4 +1,4 @@
-name: CI
+name: matrix-for-each-org
 
 on:
   push:
@@ -38,7 +38,7 @@ jobs:
                 }
               }
             }
-          }'
+          }' --jq '.data.enterprise.organizations.nodes[].login'
 
       # - name: Build matrix
       #   uses: actions/github-script@v7
