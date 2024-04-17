@@ -55,9 +55,8 @@ jobs:
     needs: build
     runs-on: ubuntu-latest
     strategy:
-      matrix: 
-        organizations: ${{ fromJson(needs.build.outputs.organizations) }}
+      matrix: ${{ fromJson(needs.build.outputs.organizations) }}
       fail-fast: false
       max-parallel: 15
     steps:
-      - run: echo "${{ matrix.repository }}" # this will print the repo name
+      - run: echo "${{ matrix.organizations }}" # this will print the repo name
