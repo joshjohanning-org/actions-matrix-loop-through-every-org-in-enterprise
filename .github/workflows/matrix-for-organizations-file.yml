@@ -9,25 +9,14 @@ on:
   # Allows you to run this workflow manually from the Actions tab
   workflow_dispatch:
 
-# A workflow run is made up of one or more jobs that can run sequentially or in parallel
 jobs:
-  # This workflow contains a single job called "build"
-  build:
-    # The type of runner that the job will run on
+  build-matrix:
     runs-on: ubuntu-latest
     outputs:
       organizations: ${{ steps.orgs.outputs.ORGANIZATIONS }}
     steps:
-      # Checks-out your repository under $GITHUB_WORKSPACE, so your job can access it
       - uses: actions/checkout@v3
 
-      # - name: get organizations in enterprise
-      #   id: orgs
-      #   env:
-      #     GH_TOKEN: ${{ secrets.ADMIN_TOKEN }}
-      #   run: |
-      #     organizations=$(cat organizations.json)
-      #     echo "ORGANIZATIONS=$organizations" >> "$GITHUB_OUTPUT"
       - uses: actions/github-script@v6
         id: orgs
         with:
@@ -45,17 +34,12 @@ jobs:
             }
           
       - run: echo "${{ steps.orgs.outputs.ORGANIZATIONS }}"
-      # - name: Build matrix
-      #   uses: actions/github-script@v7
-      #   id: json
-      #   with:
-      #     script: |
             
   run-matrix:
-    needs: build
+    needs: build-matrix
     runs-on: ubuntu-latest
     strategy:
-      matrix: ${{ fromJson(needs.build.outputs.organizations) }}
+      matrix: ${{ fromJson(needs.build-matrix.outputs.organizations) }}
       fail-fast: false
       max-parallel: 15
     steps:
