@@ -1,4 +1,4 @@
-name: matrix-for-each-org
+name: matrix-for-each-org-file
 
 on:
   push:
@@ -21,14 +21,30 @@ jobs:
       # Checks-out your repository under $GITHUB_WORKSPACE, so your job can access it
       - uses: actions/checkout@v3
 
-      - name: get organizations in enterprise
+      # - name: get organizations in enterprise
+      #   id: orgs
+      #   env:
+      #     GH_TOKEN: ${{ secrets.ADMIN_TOKEN }}
+      #   run: |
+      #     organizations=$(cat organizations.json)
+      #     echo "ORGANIZATIONS=$organizations" >> "$GITHUB_OUTPUT"
+      - uses: actions/github-script@v6
         id: orgs
-        env:
-          GH_TOKEN: ${{ secrets.ADMIN_TOKEN }}
-        run: |
-          organizations=$(cat organizations.json)
-          echo "ORGANIZATIONS=$organizations" >> "$GITHUB_OUTPUT"
-
+        with:
+          script: |
+            const fs = require('fs');
+            const core = require('@actions/core');
+            
+            try {
+              // Read the file content
+              const data = fs.readFileSync('organizations.json', 'utf8');
+            
+              // Set the output parameter with the file content
+              core.setOutput('ORGANIZATIONS', data);
+            } catch (err) {
+              console.error(err);
+            }
+          
       - run: echo "${{ steps.orgs.outputs.ORGANIZATIONS }}"
       # - name: Build matrix
       #   uses: actions/github-script@v7
